@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DentAI - Digitale Anamnese</title>
+    <style>
+        :root {
+            --apple-blue: #007AFF;
+            --apple-gray: #F5F5F7;
+            --apple-dark: #1D1D1F;
+            --apple-light: #FBFBFD;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+        }
+        
+        body {
+            background-color: var(--apple-light);
+            color: var(--apple-dark);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 768px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-top: 20px;
+        }
+        
+        h1 {
+            font-weight: 600;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .intro {
+            color: #555;
+            margin-bottom: 30px;
+            font-size: 16px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .symptom-section {
+            background: white;
+            border-radius: 14px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        h2 {
+            font-weight: 500;
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--apple-dark);
+        }
+        
+        .symptom-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .symptom-button {
+            background-color: var(--apple-gray);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 15px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            color: var(--apple-dark);
+        }
+        
+        .symptom-button:hover {
+            background-color: #E8E8ED;
+        }
+        
+        .symptom-button.active {
+            background-color: var(--apple-blue);
+            color: white;
+        }
+        
+        .custom-input {
+            margin-top: 25px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #E5E5E7;
+            font-size: 15px;
+            resize: vertical;
+            min-height: 100px;
+            margin-top: 10px;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--apple-blue);
+            box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.1);
+        }
+        
+        .pain-scale {
+            margin: 25px 0;
+        }
+        
+        .pain-levels {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+        }
+        
+        .pain-level {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .pain-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 500;
+            transition: transform 0.2s ease;
+        }
+        
+        .pain-circle:hover {
+            transform: scale(1.1);
+        }
+        
+        .pain-level:nth-child(1) .pain-circle { background-color: #50C878; }
+        .pain-level:nth-child(2) .pain-circle { background-color: #A0D636; }
+        .pain-level:nth-child(3) .pain-circle { background-color: #FFEB3B; }
+        .pain-level:nth-child(4) .pain-circle { background-color: #FFC107; }
+        .pain-level:nth-child(5) .pain-circle { background-color: #FF9800; }
+        .pain-level:nth-child(6) .pain-circle { background-color: #FF5722; }
+        
+        .pain-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .submit-btn {
+            background-color: var(--apple-blue);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 25px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .submit-btn:hover {
+            background-color: #0062CC;
+        }
+        
+        .progress {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+        
+        .progress-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        
+        .progress-step::after {
+            content: "";
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background-color: #E5E5E7;
+            z-index: 1;
+        }
+        
+        .progress-step:last-child::after {
+            display: none;
+        }
+        
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #E5E5E7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .progress-step.active .step-number {
+            background-color: var(--apple-blue);
+            color: white;
+        }
+        
+        .step-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .progress-step.active .step-label {
+            color: var(--apple-blue);
+            font-weight: 500;
+        }
+        
+        @media (max-width: 600px) {
+            .symptom-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .pain-levels {
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+            
+            .pain-level {
+                margin: 0 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>DentAI</h1>
+        <p class="intro">Bitte beantworten Sie die folgenden Fragen zu Ihren Beschwerden, damit wir Ihnen besser helfen können.</p>
+    </header>
+    
+    <div class="progress">
+        <div class="progress-step active">
+            <div class="step-number">1</div>
+            <div class="step-label">Symptome</div>
+        </div>
+        <div class="progress-step">
+            <div class="step-number">2</div>
+            <div class="step-label">Details</div>
+        </div>
+        <div class="progress-step">
+            <div class="step-number">3</div>
+            <div class="step-label">Auswertung</div>
+        </div>
+    </div>
+    
+    <div class="symptom-section">
+        <h2>Welche Symptome haben Sie? <span style="font-size: 14px; color: #666;">(Mehrfachauswahl möglich)</span></h2>
+        
+        <div class="symptom-grid">
+            <button class="symptom-button" onclick="this.classList.toggle('active')">Zahnschmerzen</button>
+            <button class="symptom-button" onclick="this.classList.toggle('active')">Zahnfleischbluten</button>
+            <button class="symptom-button" onclick="this.classList.toggle('active')">Schwellung</button>
+            <button class="symptom-button" onclick="this.classList.toggle('active')">Empfindliche Zähne</button>
+            <button class="symptom-button" onclick="this.classList.toggle('active')">Mundgeruch</button>
+            <button class="symptom-button" onclick="this.classList.toggle('active')">Lockere Zähne</button>
+            <button class="symptom-button" onclick="this.classList.toggle('active')">Geschwollenes Zahnfleisch</button>
+            <button class="symptom-button" onclick="this.classList.toggle('active')">Kopfschmerzen</button>
+            <button class="symptom-button" onclick="this.classList.toggle('active')">Schmerzen beim Kauen</button>
+            <button class="symptom-button" onclick="this.classList.toggle('active')">Verfärbungen</button>
+            <button class="symptom-button" onclick="this.classList.toggle('active')">Zahnfleischschwund</button>
+            <button class="symptom-button" onclick="this.classList.toggle('active')">Mundtrockenheit</button>
+        </div>
+        
+        <div class="pain-scale">
+            <h2>Wie stark sind Ihre Schmerzen?</h2>
+            <div class="pain-levels">
+                <div class="pain-level">
+                    <div class="pain-circle">0</div>
+                    <div class="pain-label">Keine</div>
+                </div>
+                <div class="pain-level">
+                    <div class="pain-circle">1</div>
+                    <div class="pain-label">Sehr leicht</div>
+                </div>
+                <div class="pain-level">
+                    <div class="pain-circle">2</div>
+                    <div class="pain-label">Leicht</div>
+                </div>
+                <div class="pain-level">
+                    <div class="pain-circle">3</div>
+                    <div class="pain-label">Mäßig</div>
+                </div>
+                <div class="pain-level">
+                    <div class="pain-circle">4</div>
+                    <div class="pain-label">Stark</div>
+                </div>
+                <div class="pain-level">
+                    <div class="pain-circle">5</div>
+                    <div class="pain-label">Sehr stark</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="custom-input">
+            <h2>Weitere Symptome oder Beschwerden:</h2>
+            <textarea placeholder="Bitte beschreiben Sie hier Ihre weiteren Symptome oder Beschwerden..."></textarea>
+        </div>
+    </div>
+    
+    <div class="symptom-section">
+        <h2>Wann haben die Beschwerden begonnen?</h2>
+        <div class="symptom-grid">
+            <button class="symptom-button" onclick="selectTimeOption(this)">Heute</button>
+            <button class="symptom-button" onclick="selectTimeOption(this)">Gestern</button>
+            <button class="symptom-button" onclick="selectTimeOption(this)">Vor 2-3 Tagen</button>
+            <button class="symptom-button" onclick="selectTimeOption(this)">Letzte Woche</button>
+            <button class="symptom-button" onclick="selectTimeOption(this)">Vor 2-4 Wochen</button>
+            <button class="symptom-button" onclick="selectTimeOption(this)">Über einen Monat</button>
+        </div>
+    </div>
+    
+    <button class="submit-btn">Weiter</button>
+    
+    <script>
+        function selectTimeOption(btn) {
+            // Deactivate all buttons in the same group
+            const buttons = btn.parentElement.querySelectorAll('.symptom-button');
+            buttons.forEach(button => button.classList.remove('active'));
+            
+            // Activate the clicked button
+            btn.classList.add('active');
+        }
+        
+        document.querySelectorAll('.pain-level').forEach(level => {
+            level.addEventListener('click', function() {
+                document.querySelectorAll('.pain-level .pain-circle').forEach(circle => {
+                    circle.style.transform = 'scale(1)';
+                    circle.style.boxShadow = 'none';
+                });
+                
+                const circle = this.querySelector('.pain-circle');
+                circle.style.transform = 'scale(1.15)';
+                circle.style.boxShadow = '0 0 0 3px rgba(0, 122, 255, 0.3)';
+            });
+        });
+    </script>
+</body>
+</html>

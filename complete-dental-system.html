@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DentAI - Digitale Anamnese</title>
+    <style>
+        :root {
+            --apple-blue: #007AFF;
+            --apple-gray: #F5F5F7;
+            --apple-dark: #1D1D1F;
+            --apple-light: #FBFBFD;
+            --apple-success: #34C759;
+            --apple-warning: #FF9500;
+            --apple-error: #FF3B30;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+        }
+        
+        body {
+            background-color: var(--apple-light);
+            color: var(--apple-dark);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 768px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-top: 20px;
+        }
+        
+        h1 {
+            font-weight: 600;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .intro {
+            color: #555;
+            margin-bottom: 30px;
+            font-size: 16px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 14px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        h2 {
+            font-weight: 500;
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--apple-dark);
+        }
+        
+        .symptom-grid, .treatment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .symptom-button, .treatment-button {
+            background-color: var(--apple-gray);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 15px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            color: var(--apple-dark);
+        }
+        
+        .symptom-button:hover, .treatment-button:hover {
+            background-color: #E8E8ED;
+        }
+        
+        .symptom-button.active, .treatment-button.active {
+            background-color: var(--apple-blue);
+            color: white;
+        }
+        
+        .custom-input {
+            margin-top: 25px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #E5E5E7;
+            font-size: 15px;
+            resize: vertical;
+            min-height: 100px;
+            margin-top: 10px;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--apple-blue);
+            box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.1);
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #E5E5E7;
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+        
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--apple-blue);
+            box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .pain-scale {
+            margin: 25px 0;
+        }
+        
+        .pain-levels {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+        }
+        
+        .pain-level {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .pain-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 500;
+            transition: transform 0.2s ease;
+        }
+        
+        .pain-circle:hover {
+            transform: scale(1.1);
+        }
+        
+        .pain-level:nth-child(1) .pain-circle { background-color: #50C878; }
+        .pain-level:nth-child(2) .pain-circle { background-color: #A0D636; }
+        .pain-level:nth-child(3) .pain-circle { background-color: #FFEB3B; }
+        .pain-level:nth-child(4) .pain-circle { background-color: #FFC107; }
+        .pain-level:nth-child(5) .pain-circle { background-color: #FF9800; }
+        .pain-level:nth-child(6) .pain-circle { background-color: #FF5722; }
+        
+        .pain-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .button {
+            background-color: var(--apple-blue);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 25px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .button:hover {
+            background-color: #0062CC;
+        }
+        
+        .button.secondary {
+            background-color: var(--apple-gray);
+            color: var(--apple-dark);
+        }
+        
+        .button.secondary:hover {
+            background-color: #E8E8ED;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .button-group .button {
+            flex: 1;
+        }
+        
+        .progress {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+        
+        .progress-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        
+        .progress-step::after {
+            content: "";
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background-color: #E5E5E7;
+            z-index: 1;
+        }
+        
+        .progress-step:last-child::after {
+            display: none;
+        }
+        
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #E5E5E7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .progress-step.active .step-number {
+            background-color: var(--apple-blue);
+            color: white;
+        }
+        
+        .progress-step.completed .step-number {
+            background-color: var(--apple-success);
+            color: white;
+        }
+        
+        .step-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .progress-step.active .step-label {
+            color: var(--apple-blue);
+            font-weight: 500;
+        }
+        
+        .tooth-map {
+            background-image: url('/api/placeholder/600/300');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            height: 300px;
+            position: relative;
+            margin: 30px 0;
+        }
+        
+        .tooth-point {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: rgba(255, 0, 0, 0.5);
+            border-radius: 50%;
+            cursor: pointer;
+            transform: translate(-50%, -50%);
+        }
+        
+        .tooth-point.selected {
+            background-color: red;
+            box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.3);
+        }
+        
+        .tooth-point:hover {
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .diagnosis-card {
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .diagnosis-card.primary {
+            background-color: rgba(0, 122, 255, 0.1);
+            border-left: 4px solid var(--apple-blue);
+        }
+        
+        .diagnosis-card.secondary {
+            background-color: rgba(255, 149, 0, 0.1);
+            border-left: 4px solid var(--apple-warning);
+        }
+        
+        .diagnosis-probability {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .probability-bar {
+            flex-grow: 1;
+            height: 8px;
+            background-color: #E5E5E7;
+            border-radius: 4px;
+            margin: 0 10px;
+            overflow: hidden;
+        }
+        
+        .probability-fill {
+            height: 100%;
+            background-color: var(--apple-blue);
+        }
+        
+        .probability-fill.warning {
+            background-color: var(--apple-warning);
+        }
+        
+        .diagnosis-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .diagnosis-actions {
+            margin-top: 15px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background-color: var(--apple-gray);
+            border-radius: 12px;
+            font-size: 12px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .summary-item {
+            padding: 15px 0;
+            border-bottom: 1px solid #E5E5E7;
+        }
+        
+        .summary-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .summary-info {
+            color: #666;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #E5E5E7;
+        }
+        
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+        }
+        
+        .tab.active {
+            color: var(--apple-blue);
+            border-bottom-color: var(--apple-blue);
+        }
+        
+        .medical-history {
+            margin-top: 20px;
+        }
+        
+        .medical-history-item {
+            margin-bottom: 15px;
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .checkbox-container input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        
+        .passcode-section {
+            text-align: center;
+            padding: 40px 0;
+        }
+        
+        .passcode-input {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .passcode-input input {
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            font-size: 20px;
+            border-radius: 8px;
+            border: 1px solid #E5E5E7;
+        }
+        
+        .doctor-auth-notice {
+            background-color: rgba(255, 59, 48, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--apple-error);
+        }
+        
+        .screen {
+            display: none;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        .ai-analyzing {
+            text-align: center;
+            padding: 40px 0;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(0, 122, 255, 0.1);
+            border-top-color: var(--apple-blue);
+            border-radius: 50%;
+            margin: 20px auto;
+            animation: spin 1s linear infinite;
+        }
+        
+        .visit-type-selection {
+            text-align: center;
+            padding: 20px 0;
+        }
+        
+        .visit-type-options {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            gap: 20px;
+        }
+        
+        .visit-option {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            width: 230px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .visit-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.12);
+        }
+        
+        .visit-option-icon {
+            width: 60px;
+            height: 60px;
+            background-color: var(--apple-gray);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .visit-option-icon svg {
+            width: 30px;
+            height: 30px;
+            color: var(--apple-blue);
+        }
+        
+        .visit-option-label {
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        
+        .visit-option-desc {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .standard-appointments {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .appointment-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        
+        .appointment-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .appointment-card.selected {
+            border-color: var(--apple-blue);
+        }
+        
+        .appointment-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .appointment-duration {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .appointment-desc {
+            font-size: 13px;
+            color: #888;
+            margin-top: 10px;
+            line-height: 1.4;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .visit-type-options {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .visit-option {
+                width: 100%;
+                max-width: 280px;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .symptom-grid, .treatment-grid, .standard-appointments {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .pain-levels {
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+            
+            .pain-level {
+                margin: 0 10px;
+            }
+            
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+        
+        .key-value {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        
+        .key {
+            font-weight: 500;
+            width: 200px;
+            color: #666;
+        }
+        
+        .value {
+            flex-grow: 1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>DentAI</h1>
+        <p class="intro">Digitale Anamnese und Diagnoseunterstützung</p>
+    </header>
+    
+    <!-- Startbildschirm / Besuchsgrundauswahl -->
+    <div class="screen active" id="start-screen">
+        <div class="visit-type-selection">
+            <h2>Willkommen bei Ihrer Zahnarztpraxis</h2>
+            <p>Bitte wählen Sie den Grund Ihres heutigen Besuchs:</p>
+            
+            <div class="visit-type-options">
+                <div class="visit-option" onclick="showScreen('standard-appointment-screen')">
+                    <div class="visit-option-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                    </div>
+                    <div class="visit-option-label">Standardtermin</div>
+                    <div class="visit-option-desc">Kontrolluntersuchung, Zahnreinigung oder anderer Routinetermin</div>
+                </div>
+                
+                <div class="visit-option" onclick="showScreen('patient-data-screen')">
+                    <div class="visit-option-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                        </svg>
+                    </div>
+                    <div class="visit-option-label">Beschwerden</div>
+                    <div class="visit-option-desc">Schmerzen oder andere zahnmedizinische Probleme, die untersucht werden müssen</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Standardtermin-Bildschirm -->
+    <div class="screen" id="standard-appointment-screen">
+        <div class="section">
+            <h2>Wählen Sie Ihre gewünschte Behandlung:</h2>
+            
+            <div class="standard-appointments">
+                <div class="appointment-card" onclick="selectAppointment(this)">
+                    <div class="appointment-title">Kontrolluntersuchung</div>
+                    <div class="appointment-duration">15-20 Minuten</div>
+                    <div class="appointment-desc">Reguläre zahnärztliche Untersuchung mit Beratung zu Ihrer Mundgesundheit.</div>
+                </div>
+                
+                <div class="appointment-card" onclick="selectAppointment(this)">
+                    <div class="appointment-title">Professionelle Zahnreinigung</div>
+                    <div class="appointment-duration">45-60 Minuten</div>
+                    <div class="appointment-desc">Gründliche Reinigung und Politur Ihrer Zähne durch unsere Dentalhygieniker.</div>
+                </div>
+                
+                <div class="appointment-card" onclick="selectAppointment(this)">
+                    <div class="appointment-title">Beratungsgespräch</div>
+                    <div class="appointment-duration">20-30 Minuten</div>
+                    <div class="appointment-desc">Individuelle Beratung zu Behandlungsoptionen wie Implantaten, Kronen oder kosmetischer Zahnmedizin.</div>
+                </div>
+                
+                <div class="appointment-card" onclick="selectAppointment(this)">
+                    <div class="appointment-title">Röntgenaufnahme</div>
+                    <div class="appointment-duration">10-15 Minuten</div>
+                    <div class="appointment-desc">Aktualisierung Ihrer Röntgenbilder für eine vollständige diagnostische Übersicht.</div>
+                </div>
+                
+                <div class="appointment-card" onclick="selectAppointment(this)">
+                    <div class="appointment-title">Füllungskontrolle</div>
+                    <div class="appointment-duration">15-25 Minuten</div>
+                    <div class="appointment-desc">Überprüfung bestehender Füllungen und gegebenenfalls kleine Anpassungen.</div>
+                </div>
+                
+                <div class="appointment-card" onclick="selectAppointment(this)">
+                    <div class="appointment-title">Kinderzahnheilkunde</div>
+                    <div class="appointment-duration">20-30 Minuten</div>
+                    <div class="appointment-desc">Kindgerechte Kontrolluntersuchung und Beratung zur Zahngesundheit für unsere jüngsten Patienten.</div>
+                </div>
+            </div>
+            
+            <div class="custom-input">
+                <h2>Haben Sie besondere Anliegen?</h2>
+                <textarea placeholder="Falls Sie noch weitere spezifische Anliegen haben, können Sie diese hier notieren..."></textarea>
+            </div>
+            
+            <div class="button-group">
+                <button class="button secondary" onclick="showScreen('start-screen')">Zurück</button>
+                <button class="button" onclick="showScreen('patient-data-screen')">Weiter</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Patientendaten Bildschirm -->
+    <div class="screen" id="patient-data-screen">
+        <div class="progress">
+            <div class="progress-step active">
+                <div class="step-number">1</div>
+                <div class="step-label">Persönliche Daten</div>
+            </div>
+            <div class="progress-step">
+                <div class="step-number">2</div>
+                <div class="step-label">Symptome</div>
+            </div>
+            <div class="progress-step">
+                <div class="step-number">3</div>
+                <div class="step-label">Details</div>
+            </div>
+            <div class="progress-step">
+                <div class="step-number">4</div>
+                <div class="step-label">Zusammenfassung</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Persönliche Informationen</h2>
+            
+            <div class="form-group" style="margin-top: 25px;">
+                <label for="fullname">Vollständiger Name</label>
+                <input type="text" id="fullname" placeholder="Vor- und Nachname">
+            </div>
+            
+            <div class="form-group">
+                <label for="birthdate">Geburtsdatum</label>
+                <input type="date" id="birthdate">
+            </div>
+            
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="email">E-Mail</label>
+                    <input type="email" id="email" placeholder="beispiel@email.de">
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Telefonnummer</label>
+                    <input type="tel" id="phone" placeholder="+49 123 4567890">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="address">Anschrift</label>
+                <input type="text" id="address" placeholder="Straße, Hausnummer">
+                <input type="text" id="address-city" placeholder="PLZ, Stadt" style="margin-top: 10px;">
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Versicherungsinformationen</h2>
+            
+            <div class="form-group">
+                <label for="insurance">Krankenversicherung</label>
+                <select id="insurance">
+                    <option value="">Bitte auswählen</option>
+                    <option value="public">Gesetzlich</option>
+                    <option value="private">Privat</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="insurance-name">Name der Krankenversicherung</label>
+                <input type="text" id="insurance-name" placeholder="z.B. TK, AOK, Barmer, etc.">
+            </div>
+            
+            <div class="form-group">
+                <label for="insurance-number">Versicherungsnummer</label>
+                <input type="text" id="insurance-number" placeholder="Ihre Versicherungsnummer">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div class="checkbox-container">
+                <input type="checkbox" id="data-consent">
+                <label for="data-consent">Ich stimme der Verarbeitung meiner Daten gemäß der Datenschutzerklärung zu</label>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button class="button secondary" onclick="showScreen('start-screen')">Zurück</button>
+            <button class="button" onclick="showScreen('symptoms-screen')">Weiter</button>
+        </div>
+    </div>
+    
+    <!-- Symptome Bildschirm -->
+    <div class="screen" id="symptoms-screen">
+        <div class="progress">
+            <div class="progress-step completed">
+                <div class="step-number">1</div>
+                <div class="step-label">Persönliche Daten</div>
+            </div>
+            <div class="progress-step active">
+                <div class="step-number">2</div>
+                <div class="step-label">Symptome</div>
+            </div>
+            <div class="progress-step">
+                <div class="step-number">3</div>
+                <div class="step-label">Details</div>
+            </div>
+            <div class="progress-step">
+                <div class="step-number">4</div>
+                <div class="step-label">Zusammenfassung</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Welche Symptome haben Sie? <span style="font-size: 14px; color: #666;">(Mehrfachauswahl möglich)</span></h2>
+            
+            <div class="symptom-grid">
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Zahnschmerzen</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Zahnfleischbluten</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Schwellung</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Empfindliche Zähne</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Mundgeruch</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Lockere Zähne</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Geschwollenes Zahnfleisch</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Kopfschmerzen</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Schmerzen beim Kauen</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Verfärbungen</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')

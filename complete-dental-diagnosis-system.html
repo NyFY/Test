@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DentAI - Digitale Anamnese</title>
+    <style>
+        :root {
+            --apple-blue: #007AFF;
+            --apple-gray: #F5F5F7;
+            --apple-dark: #1D1D1F;
+            --apple-light: #FBFBFD;
+            --apple-success: #34C759;
+            --apple-warning: #FF9500;
+            --apple-error: #FF3B30;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+        }
+        
+        body {
+            background-color: var(--apple-light);
+            color: var(--apple-dark);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 768px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-top: 20px;
+        }
+        
+        h1 {
+            font-weight: 600;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .intro {
+            color: #555;
+            margin-bottom: 30px;
+            font-size: 16px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 14px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        h2 {
+            font-weight: 500;
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--apple-dark);
+        }
+        
+        .symptom-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .symptom-button {
+            background-color: var(--apple-gray);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 15px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            color: var(--apple-dark);
+        }
+        
+        .symptom-button:hover {
+            background-color: #E8E8ED;
+        }
+        
+        .symptom-button.active {
+            background-color: var(--apple-blue);
+            color: white;
+        }
+        
+        .custom-input {
+            margin-top: 25px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #E5E5E7;
+            font-size: 15px;
+            resize: vertical;
+            min-height: 100px;
+            margin-top: 10px;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--apple-blue);
+            box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.1);
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #E5E5E7;
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+        
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--apple-blue);
+            box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .pain-scale {
+            margin: 25px 0;
+        }
+        
+        .pain-levels {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+        }
+        
+        .pain-level {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .pain-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 500;
+            transition: transform 0.2s ease;
+        }
+        
+        .pain-circle:hover {
+            transform: scale(1.1);
+        }
+        
+        .pain-level:nth-child(1) .pain-circle { background-color: #50C878; }
+        .pain-level:nth-child(2) .pain-circle { background-color: #A0D636; }
+        .pain-level:nth-child(3) .pain-circle { background-color: #FFEB3B; }
+        .pain-level:nth-child(4) .pain-circle { background-color: #FFC107; }
+        .pain-level:nth-child(5) .pain-circle { background-color: #FF9800; }
+        .pain-level:nth-child(6) .pain-circle { background-color: #FF5722; }
+        
+        .pain-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .button {
+            background-color: var(--apple-blue);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 25px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .button:hover {
+            background-color: #0062CC;
+        }
+        
+        .button.secondary {
+            background-color: var(--apple-gray);
+            color: var(--apple-dark);
+        }
+        
+        .button.secondary:hover {
+            background-color: #E8E8ED;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .button-group .button {
+            flex: 1;
+        }
+        
+        .progress {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+        
+        .progress-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        
+        .progress-step::after {
+            content: "";
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background-color: #E5E5E7;
+            z-index: 1;
+        }
+        
+        .progress-step:last-child::after {
+            display: none;
+        }
+        
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #E5E5E7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .progress-step.active .step-number {
+            background-color: var(--apple-blue);
+            color: white;
+        }
+        
+        .progress-step.completed .step-number {
+            background-color: var(--apple-success);
+            color: white;
+        }
+        
+        .step-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .progress-step.active .step-label {
+            color: var(--apple-blue);
+            font-weight: 500;
+        }
+        
+        .tooth-map {
+            background-image: url('/api/placeholder/600/300');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            height: 300px;
+            position: relative;
+            margin: 30px 0;
+        }
+        
+        .tooth-point {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: rgba(255, 0, 0, 0.5);
+            border-radius: 50%;
+            cursor: pointer;
+            transform: translate(-50%, -50%);
+        }
+        
+        .tooth-point.selected {
+            background-color: red;
+            box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.3);
+        }
+        
+        .tooth-point:hover {
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .diagnosis-card {
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .diagnosis-card.primary {
+            background-color: rgba(0, 122, 255, 0.1);
+            border-left: 4px solid var(--apple-blue);
+        }
+        
+        .diagnosis-card.secondary {
+            background-color: rgba(255, 149, 0, 0.1);
+            border-left: 4px solid var(--apple-warning);
+        }
+        
+        .diagnosis-probability {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .probability-bar {
+            flex-grow: 1;
+            height: 8px;
+            background-color: #E5E5E7;
+            border-radius: 4px;
+            margin: 0 10px;
+            overflow: hidden;
+        }
+        
+        .probability-fill {
+            height: 100%;
+            background-color: var(--apple-blue);
+        }
+        
+        .probability-fill.warning {
+            background-color: var(--apple-warning);
+        }
+        
+        .diagnosis-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .diagnosis-actions {
+            margin-top: 15px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background-color: var(--apple-gray);
+            border-radius: 12px;
+            font-size: 12px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .summary-item {
+            padding: 15px 0;
+            border-bottom: 1px solid #E5E5E7;
+        }
+        
+        .summary-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .summary-info {
+            color: #666;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #E5E5E7;
+        }
+        
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+        }
+        
+        .tab.active {
+            color: var(--apple-blue);
+            border-bottom-color: var(--apple-blue);
+        }
+        
+        .medical-history {
+            margin-top: 20px;
+        }
+        
+        .medical-history-item {
+            margin-bottom: 15px;
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .checkbox-container input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        
+        .passcode-section {
+            text-align: center;
+            padding: 40px 0;
+        }
+        
+        .passcode-input {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .passcode-input input {
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            font-size: 20px;
+            border-radius: 8px;
+            border: 1px solid #E5E5E7;
+        }
+        
+        .doctor-auth-notice {
+            background-color: rgba(255, 59, 48, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--apple-error);
+        }
+        
+        .screen {
+            display: none;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        .ai-analyzing {
+            text-align: center;
+            padding: 40px 0;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(0, 122, 255, 0.1);
+            border-top-color: var(--apple-blue);
+            border-radius: 50%;
+            margin: 20px auto;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .symptom-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .pain-levels {
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+            
+            .pain-level {
+                margin: 0 10px;
+            }
+            
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>DentAI</h1>
+        <p class="intro">Digitale Anamnese und Diagnoseunterstützung</p>
+    </header>
+    
+    <!-- Startbildschirm -->
+    <div class="screen active" id="start-screen">
+        <div class="section">
+            <h2>Willkommen bei DentAI</h2>
+            <p>Diese Anwendung unterstützt bei der Erfassung Ihrer Symptome und hilft dem zahnmedizinischen Personal bei der Diagnose.</p>
+            <p style="margin-top: 15px;">Bitte geben Sie zunächst Ihre persönlichen Daten ein.</p>
+            
+            <div class="form-group" style="margin-top: 25px;">
+                <label for="fullname">Vollständiger Name</label>
+                <input type="text" id="fullname" placeholder="Vor- und Nachname">
+            </div>
+            
+            <div class="form-group">
+                <label for="birthdate">Geburtsdatum</label>
+                <input type="date" id="birthdate">
+            </div>
+            
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="email">E-Mail</label>
+                    <input type="email" id="email" placeholder="beispiel@email.de">
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Telefonnummer</label>
+                    <input type="tel" id="phone" placeholder="+49 123 4567890">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="insurance">Krankenversicherung</label>
+                <select id="insurance">
+                    <option value="">Bitte auswählen</option>
+                    <option value="public">Gesetzlich</option>
+                    <option value="private">Privat</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="insurance-name">Name der Krankenversicherung</label>
+                <input type="text" id="insurance-name" placeholder="z.B. TK, AOK, Barmer, etc.">
+            </div>
+            
+            <div class="form-group">
+                <label for="insurance-number">Versicherungsnummer</label>
+                <input type="text" id="insurance-number" placeholder="Ihre Versicherungsnummer">
+            </div>
+            
+            <div class="form-group">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="data-consent">
+                    <label for="data-consent">Ich stimme der Verarbeitung meiner Daten gemäß der Datenschutzerklärung zu</label>
+                </div>
+            </div>
+            
+            <button class="button" onclick="showScreen('symptoms-screen')">Weiter</button>
+        </div>
+    </div>
+    
+    <!-- Symptome Bildschirm -->
+    <div class="screen" id="symptoms-screen">
+        <div class="progress">
+            <div class="progress-step completed">
+                <div class="step-number">1</div>
+                <div class="step-label">Persönliche Daten</div>
+            </div>
+            <div class="progress-step active">
+                <div class="step-number">2</div>
+                <div class="step-label">Symptome</div>
+            </div>
+            <div class="progress-step">
+                <div class="step-number">3</div>
+                <div class="step-label">Details</div>
+            </div>
+            <div class="progress-step">
+                <div class="step-number">4</div>
+                <div class="step-label">Zusammenfassung</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Welche Symptome haben Sie? <span style="font-size: 14px; color: #666;">(Mehrfachauswahl möglich)</span></h2>
+            
+            <div class="symptom-grid">
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Zahnschmerzen</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Zahnfleischbluten</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Schwellung</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Empfindliche Zähne</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Mundgeruch</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Lockere Zähne</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Geschwollenes Zahnfleisch</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Kopfschmerzen</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Schmerzen beim Kauen</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Verfärbungen</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Zahnfleischschwund</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Mundtrockenheit</button>
+            </div>
+            
+            <div class="pain-scale">
+                <h2>Wie stark sind Ihre Schmerzen?</h2>
+                <div class="pain-levels">
+                    <div class="pain-level">
+                        <div class="pain-circle">0</div>
+                        <div class="pain-label">Keine</div>
+                    </div>
+                    <div class="pain-level">
+                        <div class="pain-circle">1</div>
+                        <div class="pain-label">Sehr leicht</div>
+                    </div>
+                    <div class="pain-level">
+                        <div class="pain-circle">2</div>
+                        <div class="pain-label">Leicht</div>
+                    </div>
+                    <div class="pain-level">
+                        <div class="pain-circle">3</div>
+                        <div class="pain-label">Mäßig</div>
+                    </div>
+                    <div class="pain-level">
+                        <div class="pain-circle">4</div>
+                        <div class="pain-label">Stark</div>
+                    </div>
+                    <div class="pain-level">
+                        <div class="pain-circle">5</div>
+                        <div class="pain-label">Sehr stark</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="custom-input">
+                <h2>Weitere Symptome oder Beschwerden:</h2>
+                <textarea placeholder="Bitte beschreiben Sie hier Ihre weiteren Symptome oder Beschwerden..."></textarea>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Wann haben die Beschwerden begonnen?</h2>
+            <div class="symptom-grid">
+                <button class="symptom-button" onclick="selectTimeOption(this)">Heute</button>
+                <button class="symptom-button" onclick="selectTimeOption(this)">Gestern</button>
+                <button class="symptom-button" onclick="selectTimeOption(this)">Vor 2-3 Tagen</button>
+                <button class="symptom-button" onclick="selectTimeOption(this)">Letzte Woche</button>
+                <button class="symptom-button" onclick="selectTimeOption(this)">Vor 2-4 Wochen</button>
+                <button class="symptom-button" onclick="selectTimeOption(this)">Über einen Monat</button>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button class="button secondary" onclick="showScreen('start-screen')">Zurück</button>
+            <button class="button" onclick="showScreen('details-screen')">Weiter</button>
+        </div>
+    </div>
+    
+    <!-- Details Bildschirm -->
+    <div class="screen" id="details-screen">
+        <div class="progress">
+            <div class="progress-step completed">
+                <div class="step-number">1</div>
+                <div class="step-label">Persönliche Daten</div>
+            </div>
+            <div class="progress-step completed">
+                <div class="step-number">2</div>
+                <div class="step-label">Symptome</div>
+            </div>
+            <div class="progress-step active">
+                <div class="step-number">3</div>
+                <div class="step-label">Details</div>
+            </div>
+            <div class="progress-step">
+                <div class="step-number">4</div>
+                <div class="step-label">Zusammenfassung</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Lokalisation des Schmerzes</h2>
+            <p>Bitte klicken Sie auf den Bereich, wo Sie Schmerzen oder Beschwerden haben:</p>
+            
+            <div class="tooth-map">
+                <!-- Beispiel-Punkte, die in der echten Anwendung auf ein Zahnschema gesetzt würden -->
+                <div class="tooth-point" style="top: 40%; left: 30%" onclick="this.classList.toggle('selected')"></div>
+                <div class="tooth-point" style="top: 40%; left: 40%" onclick="this.classList.toggle('selected')"></div>
+                <div class="tooth-point" style="top: 40%; left: 50%" onclick="this.classList.toggle('selected')"></div>
+                <div class="tooth-point" style="top: 40%; left: 60%" onclick="this.classList.toggle('selected')"></div>
+                <div class="tooth-point" style="top: 40%; left: 70%" onclick="this.classList.toggle('selected')"></div>
+                <div class="tooth-point" style="top: 60%; left: 30%" onclick="this.classList.toggle('selected')"></div>
+                <div class="tooth-point" style="top: 60%; left: 40%" onclick="this.classList.toggle('selected')"></div>
+                <div class="tooth-point" style="top: 60%; left: 50%" onclick="this.classList.toggle('selected')"></div>
+                <div class="tooth-point" style="top: 60%; left: 60%" onclick="this.classList.toggle('selected')"></div>
+                <div class="tooth-point" style="top: 60%; left: 70%" onclick="this.classList.toggle('selected')"></div>
+            </div>
+            
+            <h2>Schmerzcharakteristik</h2>
+            <div class="symptom-grid">
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Pochend</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Stechend</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Dumpf</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Ziehend</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Brennend</button>
+                <button class="symptom-button" onclick="this.classList.toggle('active')">Pulsierend</button>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Medizinische Vorgeschichte</h2>
+            
+            <div class="medical-history">
+                <div class="medical-history-item">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="diabetes">
+                        <label for="diabetes">Diabetes</label>
+                    </div>
+                </div>
+                
+                <div class="medical-history-item">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="heart-disease">
+                        <label for="heart-disease">Herz-Kreislauf-Erkrankungen</label>
+                    </div>
+                </div>
+                
+                <div class="medical-history-item">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="allergies">
+                        <label for="allergies">Allergien</label>
+                    </div>
+                    <input type="text" id="allergies-detail" placeholder="Bitte spezifizieren Sie Ihre Allergien" style="display: none;">
+                </div>
+                
+                <div class="medical-history-item">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="medications">
+                        <label for="medications">Nehmen Sie regelmäßig Medikamente?</label>
+                    </div>
+                    <textarea id="medications-detail" placeholder="Bitte geben Sie an, welche Medikamente Sie einnehmen" style="display: none;"></textarea>
+                </div>
+            </div>
+            
+            <h2>Letzte Zahnbehandlung</h2>
+            <div class="symptom-grid">
+                <button class="symptom-button" onclick="selectTimeOption(this)">In den letzten 6 Monaten</button>
+                <button class="symptom-button" onclick="selectTimeOption(this)">Vor 6-12 Monaten</button>
+                <button class="symptom-button" onclick="selectTimeOption(this)">Vor 1-2 Jahren</button>
+                <button class="symptom-button" onclick="selectTimeOption(this)">Vor mehr als 2 Jahren</button>
+                <button class="symptom-button" onclick="selectTimeOption(this)">Noch nie</button>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button class="button secondary" onclick="showScreen('symptoms-screen')">Zurück</button>
+            <button class="button" onclick="showScreen('analyzing-screen')">Weiter</button>
+        </div>
+    </div>
+    
+    <!-- Analyzing Bildschirm -->
+    <div class="screen" id="analyzing-screen">
+        <div class="ai-analyzing">
+            <h2>Ihre Angaben werden ausgewertet</h2>
+            <div class="loading-spinner"></div>
+            <p>DentAI analysiert Ihre Symptome und bereitet eine Zusammenfassung für Sie vor...</p>
+        </div>
+        
+        <script>
+            // Diese Funktion würde in der echten Anwendung die KI-Analyse initiieren
+            setTimeout(function() {
+                showScreen('summary-screen');
+            }, 3000);
+        </script>
+    </div>
+    
+    <!-- Zusammenfassung Bildschirm (für Patienten) -->
+    <div class="screen" id="summary-screen">
+        <div class="progress">
+            <div class="progress-step completed">
+                <div class="step-number">1</div>
+                <div class="step-label">Persönliche Daten</div>
+            </div>
+            <div class="progress-step completed">
+                <div class="step-number">2</div>
+                <div class="step-label">Symptome</div>
+            </div>
+            <div class="progress-step completed">
+                <div class="step-number">3</div>
+                <div class="step-label">Details</div>
+            </div>
+            <div class="progress-step active">
+                <div class="step-number">4</div>
+                <div class="step-label">Zusammenfassung</div>
+            </div>
+        </div
